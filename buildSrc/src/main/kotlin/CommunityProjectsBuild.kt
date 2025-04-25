@@ -25,7 +25,7 @@ private val LOGGER: Logger = Logger.getLogger("Kotlin settings logger")
  * (see [configureCommunityBuildTweaks]).
  *
  * DO NOT change the name of these properties without adapting the kotlinx.train build chain.
-*/
+ */
 
 /**
  * Should be used for running against of non-released Kotlin compiler on a system test level.
@@ -201,11 +201,13 @@ fun KotlinCommonCompilerOptions.configureKotlinUserProject() {
  * See <https://github.com/Kotlin/kotlinx.coroutines/pull/4392#issuecomment-2775630200>
  */
 fun KotlinCommonCompilerOptions.addExtraCompilerFlags(project: Project) {
-    val extraOptions = project.providers.gradleProperty("kotlin_additional_cli_options").orNull
-    if (extraOptions != null) {
-        LOGGER.info("""Adding extra compiler flags '$extraOptions' for a compilation in the project $${project.name}""")
-        extraOptions.split(" ").forEach {
-            if (it.isNotEmpty()) freeCompilerArgs.add(it)
+    val extraOptions = project.providers.gradleProperty("kotlin_additional_cli_options")
+        .orNull?.let { options ->
+            options.removeSurrounding("\"").split(" ").filter { it.isNotBlank() }
         }
+    extraOptions?.forEach { option ->
+        freeCompilerArgs.add(option)
+        LOGGER.info("""Adding extra compiler flags '$extraOptions' for a compilation in the project $${project.name}""")
     }
 }
+
