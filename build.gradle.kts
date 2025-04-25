@@ -1,6 +1,9 @@
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 import org.jetbrains.kotlin.gradle.dsl.*
 import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+import kotlin.collections.joinToString
 
 buildscript {
     if (shouldUseLocalMaven(rootProject)) {
@@ -170,4 +173,11 @@ rootProject.registerTopLevelDeployTask()
 if (isSnapshotTrainEnabled(rootProject)) {
     // Report Kotlin compiler version when building project
     println("Using Kotlin compiler version: ${KotlinCompilerVersion.VERSION}")
+}
+
+tasks.withType<KotlinCompilationTask<*>>().configureEach {
+    doFirst {
+        logger.info("Added Kotlin compiler flags: ${compilerOptions.freeCompilerArgs.get().joinToString(", ")}")
+        logger.info("allWarningsAsErrors=${compilerOptions.allWarningsAsErrors.get()}")
+    }
 }

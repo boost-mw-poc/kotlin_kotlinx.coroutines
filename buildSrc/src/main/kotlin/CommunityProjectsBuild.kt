@@ -207,7 +207,5 @@ fun KotlinCommonCompilerOptions.addExtraCompilerFlags(project: Project) {
         }
     extraOptions?.forEach { option ->
         freeCompilerArgs.add(option)
-        LOGGER.info("""Adding extra compiler flags '$extraOptions' for a compilation in the project $${project.name}""")
     }
 }
-
